@@ -1,3 +1,4 @@
+import re
 from flask import Blueprint , request
 from constant_info import RESULT_PATH
 from utils.utils import SendError , SendRes, isEmpty, optionalValueHelper
@@ -14,6 +15,8 @@ def router(x):
         return  __initmodel()
     elif x == 'predict-items':
         return  __predict() 
+    elif x == 'model-status':
+        return  __modelStatus()     
     elif x == 'process-raw-data':
         return  __start_processing_raw_data()    
     elif x == 'clear-results-folder':
@@ -33,9 +36,19 @@ def __initmodel():
     try:
      if request.method == 'POST':
         res =model.load_model()
-        return SendRes(res) 
+        return SendRes(str(res)) 
     except Exception as e:
         return SendError(400, str(e))
+
+def __modelStatus():
+    try:
+        if request.method == 'GET':
+            if model.isModelUp == True:
+                return SendRes(str('model is up')) 
+            return SendRes(error='model not init')   
+    except Exception as e:
+        return SendError(400, str(e))       
+
 
 def __clear_result_folder():
     try:
@@ -143,7 +156,3 @@ def __getResults():
 
     except Exception as e:
         return SendError(400, str(e))              
-
-    # model.start_processing_data()
-# model.predict_data(result_number=2)
-# model.clear_data_folder()        

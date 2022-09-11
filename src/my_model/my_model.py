@@ -1,6 +1,5 @@
 ## Package
 
-import librosa.display
 import numpy as np
 import pandas as pd
 
@@ -30,6 +29,7 @@ class MyModel:
         print('init model')
         self.data_maker = MyDataMaker(delete_raw_items=DELETE_RAW_ITEMS)
         self.my_model = None
+        self.isModelUp=False
         self.input_duration = 3
         self.MODEL_NAME_JSON = 'my_model_json_' + str(model_number) + '.json'
         self.MODEL_WEIGHT = 'model_weight_aug_np_' + str(model_number) + '.h5'
@@ -50,6 +50,7 @@ class MyModel:
             # evaluate loaded model on test data
             loaded_model.compile(loss='categorical_crossentropy', optimizer=self.OPTIMIZER, metrics=['accuracy'])
             self.my_model = loaded_model
+            self.isModelUp=True
             return str('model loaded!')
         except:
             return str('cant load model')

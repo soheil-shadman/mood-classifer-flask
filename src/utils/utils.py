@@ -1,4 +1,4 @@
-from flask import abort as fabort , make_response ,jsonify,Response
+from flask import abort  , make_response ,jsonify,Response
 def isEmpty(val):
     if val is None:
         return True
@@ -16,13 +16,14 @@ def SendError(status_code, message):
                     {"error":message , "code": status_code}
                 ),)
     response.status_code = status_code
+    print(str(response))
+    print(message)
+    abort(response)
 
-    fabort(response)
-
-def SendRes(data):
+def SendRes(data='',error=''):
     
     response = make_response(  jsonify(
-                    {"error":'' , "code": 200,"_data":data}
+                    {"error":error , "code": 200,"_data":data}
                 ),)
     response.status_code = 200
     return response;    
