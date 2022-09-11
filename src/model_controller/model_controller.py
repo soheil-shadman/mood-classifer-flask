@@ -9,7 +9,7 @@ import os
 from os.path import exists
 import json
 
-@model_controller_blueprint.route('/api/model-controller/<x>', methods=['POST','GET'])
+@model_controller_blueprint.route('/api/model-controller/<x>', methods=['POST','GET'], strict_slashes=False)
 def router(x):
     if x == 'init-model':
         return  __initmodel()
@@ -27,7 +27,7 @@ def router(x):
         return  __getResults()    
     elif x == 'get_single_result':
         return  __getSingleResult()     
-    elif x == 'upload_audio':
+    elif x == 'upload-audio':
         return  __upload_audio()                
     else :
         return SendError(403,"no route found")
@@ -63,12 +63,12 @@ def __upload_audio():
      if request.method == 'POST':
         uploaded_file = request.files['file']
         if uploaded_file is None:
-            return SendError(400, str('no file included'))
+            return SendError(500, str('no file included'))
         filename = secure_filename(uploaded_file.filename)
         if filename != '':
             file_ext = os.path.splitext(filename)[1]
         if file_ext not in app.config['UPLOAD_EXTENSIONS']:
-            return SendError(404, str('bad file !'))
+            return SendError(500, str('bad file !'))
         file_exists = exists(app.config['UPLOAD_PATH']+filename)    
         if file_exists :
               uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], "e"+filename))
@@ -103,13 +103,13 @@ def __predict():
             body = request.get_json()
     
             if isEmpty(body.get('result_number')) :
-                return SendError(400,'invalid result_number params')
+                return SendError(500,'invalid result_number params')
 
             res =model.predict_data(int(body.get('result_number')))     
                   
             return SendRes(res) 
         else:
-            return  SendError(400, 'The request payload is not in JSON format')
+            return  SendError(500, 'The request payload is not in JSON format')
     except Exception as e:
         return SendError(400, str(e))
 
@@ -120,7 +120,7 @@ def __getSingleResult():
                 body = request.get_json()
         
                 if isEmpty(body.get('result_number')) :
-                    return SendError(400,'invalid result_number params')
+                    return SendError(500,'invalid result_number params')
             result_no= int(body.get('result_number'))
             files = os.listdir(RESULT_PATH)
             if len(files) == 0 :
@@ -132,7 +132,7 @@ def __getSingleResult():
                         res=json.load(jsonfile)
                     
             if res is None:
-                return SendError(404, str('No item :('))         
+                return SendError(500, str('No item :('))         
 
             return SendRes(res)    
         else:
