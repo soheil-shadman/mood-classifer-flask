@@ -79,7 +79,7 @@ class MyModel:
        res= self.data_maker.process_data()
        return str(res)
 
-    def predict_data(self, result_number):
+    def predict_data(self, result_number,clear_data=False):
         try:
             if self.my_model is None:
                 return str('no model found ...')
@@ -129,8 +129,11 @@ class MyModel:
                     "mood": predictions[i],
                     "date": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                 })
+            if(clear_data) :   
+                self.clear_data_folder()    
             with open(RESULT_PATH + 'result_' + str(result_number) + ".json", 'w') as f:
                 json.dump(jsonValue, f, ensure_ascii=False)
+          
             return str('result saved !')    
         except:
             return str('there was an error with prediction ')

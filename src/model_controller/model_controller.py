@@ -1,4 +1,5 @@
 import re
+from xmlrpc.client import Boolean
 from flask import Blueprint , request
 from constant_info import RESULT_PATH
 from utils.utils import SendError , SendRes, isEmpty, optionalValueHelper
@@ -101,11 +102,11 @@ def __predict():
      if request.method == 'POST':
         if request.is_json:
             body = request.get_json()
-    
-            if isEmpty(body.get('result_number')) :
+      
+            if isEmpty(body.get('result_number')) or isEmpty(body.get('delete_data')) :
                 return SendError(500,'invalid result_number params')
-
-            res =model.predict_data(int(body.get('result_number')))     
+            clear_dataz=Boolean(body.get('delete_data'))
+            res =model.predict_data(int(body.get('result_number')),clear_data=clear_dataz)     
                   
             return SendRes(res) 
         else:
