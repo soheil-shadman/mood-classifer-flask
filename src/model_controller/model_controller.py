@@ -46,7 +46,7 @@ def __modelStatus():
         if request.method == 'GET':
             if model.isModelUp == True:
                 return SendRes(str('model is up')) 
-            return SendRes(error='model not init')   
+            return SendError(message='model not init')   
     except Exception as e:
         return SendError(400, str(e))       
 

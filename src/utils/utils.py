@@ -11,19 +11,16 @@ def optionalValueHelper(val):
         return None
     else :
         return val          
-def SendError(status_code, message):
-    response = make_response(  jsonify(
+def SendError(status_code=500, message=''):
+    response = make_response( jsonify(
                     {"error":message , "code": status_code}
-                ),)
-    response.status_code = status_code
-    print(str(response))
-    print(message)
-    abort(response)
+                ),status_code)
+    return response
 
 def SendRes(data='',error=''):
     
     response = make_response(  jsonify(
                     {"error":error , "code": 200,"_data":data}
-                ),)
-    response.status_code = 200
+                ),200)
+
     return response;    
