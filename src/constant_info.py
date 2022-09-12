@@ -9,4 +9,4 @@ RESULT_PATH = '../storage/results/'
 MODELS_PATH = '../storage/models/'
 WEIGHTS_PATH = '../storage/weights/'
 RAW_DATA_PATH = '../storage/raw_data/'
-DELETE_RAW_ITEMS = False
+DELETE_RAW_ITEMS = True
