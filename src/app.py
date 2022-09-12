@@ -4,6 +4,7 @@ from my_model.my_model import MyModel
 
 
 model = MyModel(model_number=MODEL_NUMER)
+model.load_model()
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 *1024
