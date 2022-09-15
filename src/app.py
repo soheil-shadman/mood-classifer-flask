@@ -1,16 +1,14 @@
 from flask import Flask
-from constant_info import SERVER_PORT,SERVER_HOST,MODEL_NUMER,RAW_DATA_PATH
+from constant_info import MODEL_NUMBER
 from my_model.my_model import MyModel
 
 
-model = MyModel(model_number=MODEL_NUMER)
+model = MyModel(model_number=MODEL_NUMBER)
 model.load_model()
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 *1024
 app.config['UPLOAD_EXTENSIONS'] = ['.wav']
-app.config['UPLOAD_PATH'] = RAW_DATA_PATH
-#flask run -h localhost -p 3000
 
 
 #Blueprints import
@@ -25,7 +23,6 @@ def Index():
 
 
 if __name__ == '__main__':
-    app.debug(True)
-    app.run(port=SERVER_PORT ,debug=False,host=SERVER_HOST)
+    app.run()
  
 

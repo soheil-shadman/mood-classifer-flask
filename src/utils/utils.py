@@ -1,4 +1,6 @@
 from flask import abort  , make_response ,jsonify,Response
+from constant_info import RAW_PATH , RESULT_PATH , DATA_PATH
+import os
 def isEmpty(val):
     if val is None:
         return True
@@ -24,3 +26,14 @@ def SendRes(data='',error=''):
                 ),200)
 
     return response;    
+
+def makeNewSessionFolder(path):
+        if not os.path.exists(path):
+            os.makedirs(path)
+        if not os.path.exists(path+RAW_PATH):
+            os.makedirs(path+RAW_PATH)
+        if not os.path.exists(path+RESULT_PATH):
+            os.makedirs(path+RESULT_PATH)
+        if not os.path.exists(path+DATA_PATH):
+            os.makedirs(path+DATA_PATH)
+

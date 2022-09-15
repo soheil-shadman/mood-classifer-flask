@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 import librosa
+import shutil
 
 ## Keras
 
@@ -20,7 +21,7 @@ import json
 from datetime import datetime
 from my_model.file_init_class import FileInitClass
 from my_model.my_data_maker import MyDataMaker
-from constant_info import DATA_PATH,WEIGHTS_PATH,MODELS_PATH,RESULT_PATH, DELETE_RAW_ITEMS
+from constant_info import DATA_PATH, FEED_BACK_FILE, RAW_PATH, RESULT_PATH, SESSIONS_FILE, WEIGHTS_PATH,MODELS_PATH,SESSION_PATH
 
 
 class MyModel:
@@ -28,14 +29,14 @@ class MyModel:
     def __init__(self, model_number):
         FileInitClass()
         print('init model')
-        self.data_maker = MyDataMaker(delete_raw_items=DELETE_RAW_ITEMS)
+        self.data_maker = MyDataMaker()
         self.my_model = None
         self.isModelUp=False
         self.input_duration = 3
         self.MODEL_NAME_JSON = 'my_model_json_' + str(model_number) + '.json'
         self.MODEL_WEIGHT = 'model_weight_aug_np_' + str(model_number) + '.h5'
         self.OPTIMIZER = SGD(learning_rate=0.0001, momentum=0.0, decay=0.0, nesterov=False)
-        # self.load_model()
+        self.load_model()
 
     def load_model(self):
         try:
@@ -54,42 +55,40 @@ class MyModel:
             self.isModelUp=True
             return str('model loaded!')
         except:
-            return str('cant load model')
+            return str('unable to load model')
             
 
-    def clear_data_folder(self):
+    def clear_sessions_folder(self):
         try:
-            files = os.listdir(DATA_PATH)
-            for i in files:
-                os.remove(DATA_PATH + i)
-            return str('data folder cleared')
+
+            os.remove(SESSIONS_FILE)
+            os.remove(FEED_BACK_FILE)
+            for dir in os.listdir(SESSION_PATH):
+                shutil.rmtree(os.path.join(SESSION_PATH,dir))    
+            return str('session folder cleared')
         except OSError as e:
             return str("Error: " + e.strerror)
 
-    def clear_result_folder(self):
-        try:
-            files = os.listdir(RESULT_PATH)
-            for i in files:
-                os.remove(RESULT_PATH + i)
-            return str('result folder cleared')
-        except OSError as e:
-            return str("Error: " + e.strerror)
 
-    def start_processing_data(self):
-       res= self.data_maker.process_data()
+    def start_processing_data(self,session_id , filename):
+       res= self.data_maker.process_data(session_id=session_id,filename=filename)
        return str(res)
 
-    def predict_data(self, result_number,clear_data=False):
+    def predict_data(self, session_id=0,filename=''):
         try:
             if self.my_model is None:
                 return str('no model found ...')
-            files = os.listdir(DATA_PATH)
+            data_files = os.listdir(SESSION_PATH+"session_"+str(session_id)+"/"+DATA_PATH)
+            files =[]
+            for i in data_files:
+                if  filename in i:
+                    files.append(i)
             if len(files) == 0:
                 return str('no files found ...')
             data_pred = pd.DataFrame(columns=['feature'])
             filenames = []
             for i in tqdm(range(len(files))):
-                X, sample_rate = librosa.load(DATA_PATH + files[i], res_type='kaiser_fast',
+                X, sample_rate = librosa.load(SESSION_PATH+"session_"+str(session_id)+"/"+DATA_PATH + files[i], res_type='kaiser_fast',
                                               duration=self.input_duration,
                                               sr=22050 * 2,
                                               offset=0.5)
@@ -126,14 +125,14 @@ class MyModel:
             for i in range(0, len(filenames)):
                 jsonValue.append({
                     "filename": filenames[i],
+                    "original_filename": filename,
                     "mood": predictions[i],
                     "date": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                 })
-            if(clear_data) :   
-                self.clear_data_folder()    
-            with open(RESULT_PATH + 'result_' + str(result_number) + ".json", 'w') as f:
+ 
+            with open(SESSION_PATH+"session_"+str(session_id)+"/"+RESULT_PATH + 'result_' + filename.split('.wav')[0]+ ".json", 'w') as f:
                 json.dump(jsonValue, f, ensure_ascii=False)
           
-            return str('result saved !')    
+            return str('result saved for session_id : '+str(session_id)+" filename : " +filename)    
         except:
             return str('there was an error with prediction ')

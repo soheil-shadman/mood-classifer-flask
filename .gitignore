@@ -106,9 +106,9 @@ venv.bak/
 .mypy_cache/
 
 # storage
-.storage/results
-.storage/raw_data
-.storage/data
-/storage/results
-/storage/raw_data
-/storage/data
+.storage/sessions
+/storage/sessions
+.storage/sessions.json
+/storage/sessions.json
+.storage/feed_back.json
+/storage/feed_back.json
