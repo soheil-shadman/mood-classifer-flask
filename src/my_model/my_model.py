@@ -133,6 +133,6 @@ class MyModel:
             with open(SESSION_PATH+"session_"+str(session_id)+"/"+RESULT_PATH + 'result_' + filename.split('.wav')[0]+ ".json", 'w') as f:
                 json.dump(jsonValue, f, ensure_ascii=False)
           
-            return str('result saved for session_id : '+str(session_id)+" filename : " +filename)    
+            return str('result saved for session_id => '+str(session_id)+" filename => " +filename)    
         except:
             return str('there was an error with prediction ')
