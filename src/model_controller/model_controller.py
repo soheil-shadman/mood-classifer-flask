@@ -21,7 +21,6 @@ def router(x):
             return SendError(404,"access denied")
     else:
         return SendError(404,"access denied")        
-    
     if x == 'reload-model':
         return  __reloadmodel()
     elif x == 'make-session':
@@ -77,14 +76,18 @@ def __make_session():
 
 
 def __upload_audio():
+    
     try:
      if request.method == 'POST':
-        data=json.loads(request.form.get('session_id'))     
-        if isEmpty(data) :
-            return SendError(500,'invalid session_id')
 
+        data=request.form.get('session_id')
+        if isEmpty(data) :
+            return SendError(500,'invalid session_id param')
               
-        session_id=int(data)            
+        session_id=int(data)  
+        if session_id == -1 :
+            return SendError(500,'no session_id recieved')
+
         uploaded_file = request.files['file']
         if uploaded_file is None:
                 return SendError(500, str('no file included'))
@@ -103,6 +106,7 @@ def __upload_audio():
             uploaded_file.save(os.path.join(filepath, filename))      
             return SendRes('file uploaded!')
     except Exception as e:
+
         return SendError(400, str(e))
  
 
